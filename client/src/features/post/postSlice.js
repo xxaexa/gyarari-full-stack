@@ -12,10 +12,7 @@ export const createPost = createAsyncThunk(
   'post/createPost',
   async (formData, thunkAPI) => {
     try {
-      const response = await axios.post(
-        'http://localhost:3001/api/post/createPost',
-        formData
-      )
+      const response = await customFetch.post('post/createPost', formData)
       return response.data
     } catch (error) {
       return checkForUnauthorizedResponse(error, thunkAPI)
@@ -25,7 +22,7 @@ export const createPost = createAsyncThunk(
 
 export const getPost = createAsyncThunk('post/', async (_, thunkAPI) => {
   try {
-    const response = await axios.get('http://localhost:3001/api/post/')
+    const response = await customFetch.get('post/')
     return response.data
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data.msg)

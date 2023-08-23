@@ -1,6 +1,5 @@
 import Error from './Error'
 import Login from './Login'
-import ProtectedRoute from './ProtectedRoute'
-import SharedLayout from './SharedLayout'
+import Posts from './Posts'
 
-export { Error, Login, ProtectedRoute, SharedLayout }
+export { Error, Login, Posts }

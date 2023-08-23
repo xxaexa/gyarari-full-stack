@@ -1,7 +1,7 @@
 const Error = () => {
   return (
     <div className="text-7xl flex items-center justify-center font-bold min-h-screen">
-      <p>NOTFOUND</p>
+      <p>NOT FOUND</p>
     </div>
   )
 }
