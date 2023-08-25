@@ -18,7 +18,7 @@ const Navbar = () => {
           <Link to={'/post'}>Gyararī</Link>
         </li>
         <li className="flex space-x-6 px-4">
-          <p>{user.username}</p>
+          <p>{user.user.username}</p>
           <button
             onClick={() => dispatch(setOpenModal())}
             className="cursor-pointer">

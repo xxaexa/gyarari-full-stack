@@ -2,14 +2,25 @@ import Button from './Button'
 import FormRow from './FormRow'
 import { useDispatch, useSelector } from 'react-redux'
 import { createPost } from './../features/post/postSlice'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { setCloseModal } from './../features/modal/modalSlice'
 import { RiImageAddLine } from 'react-icons/ri'
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from 'firebase/storage'
+import { app } from './../firebase/config'
+import { useNavigate } from 'react-router'
 
 const Upload = () => {
+  const navigate = useNavigate()
   const { user } = useSelector((state) => state.user)
-
   const { modal } = useSelector((state) => state.modal)
+
+  const dispatch = useDispatch()
+  const [image, setImage] = useState(null)
   const initialValues = {
     uploadBy: '',
     description: '',
@@ -17,23 +28,42 @@ const Upload = () => {
   }
   const [values, setValues] = useState(initialValues)
 
-  const dispatch = useDispatch()
-
   const handleChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value })
   }
 
-  const handleFile = (e) => {
-    setValues({ ...values, image: e.target.files[0] })
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const imageName = image.name
+    const storage = getStorage(app)
+    const storageRef = ref(storage, imageName)
+    const uploadTask = uploadBytesResumable(storageRef, image)
+
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        console.log('Upload is ' + progress + '% done')
+      },
+      (error) => {
+        console.log(error)
+      },
+
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          const post = { ...values, image: downloadURL }
+          dispatch(createPost(post))
+          dispatch(setCloseModal())
+        })
+      }
+    )
   }
 
-  const handleSubmit = () => {
-    const formData = new FormData()
-    for (const [key, value] of Object.entries(values)) {
-      formData.append(key, value)
-    }
-    dispatch(createPost(formData))
-  }
+  useEffect(() => {
+    if (modal === false) setTimeout(() => navigate('/post'), 3000)
+  }, [])
+  console.log(modal === false)
+
   return (
     <div className=" bg-opacity-60 absolute min-h-screen">
       {modal === true ? (
@@ -50,9 +80,10 @@ const Upload = () => {
                   onChange={handleChange}
                 />
               </div>
+
               <FormRow
                 text={'Description'}
-                type={'description'}
+                type={'text'}
                 name={'description'}
                 value={values.description}
                 onChange={handleChange}
@@ -61,7 +92,7 @@ const Upload = () => {
                 <label htmlFor="file" className="cursor-pointer">
                   <div className="text-4xl flex space-x-4">
                     <RiImageAddLine />
-                    <p className="text-xl">{values.image.name}</p>
+                    {image && <p className="text-xl">{image.name}</p>}
                   </div>
 
                   <input
@@ -69,18 +100,14 @@ const Upload = () => {
                     type="file"
                     name="image"
                     accept=".png, .jpg, .jpeg"
-                    onChange={handleFile}
+                    onChange={(e) => setImage(e.target.files[0])}
                     className="hidden w-12"
                   />
                 </label>
               </div>
 
               <div className="flex flex-row">
-                <Button
-                  type={'submit'}
-                  text={'Upload'}
-                  onClick={() => dispatch(setCloseModal())}
-                />
+                <Button type={'submit'} text={'Upload'} />
                 <p
                   onClick={() => dispatch(setCloseModal())}
                   className="bg-red-500 text-xl font-semibold tracking-wider text-white px-2 py-1 rounded-lg mx-auto block cursor-pointer">

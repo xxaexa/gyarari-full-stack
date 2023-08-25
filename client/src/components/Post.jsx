@@ -7,9 +7,8 @@ const Post = ({ description, image, likes, uploadBy }) => {
   const [isHovering, setIsHovering] = useState(false)
   const [openDetail, setOpenDetail] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
-
   const handleDownload = () => {
-    FileSaver.saveAs(`http://localhost:3001/${image}`, image)
+    FileSaver.saveAs(`${image}`, image)
   }
   const handleMouseOver = () => {
     setIsHovering(true)
@@ -22,7 +21,7 @@ const Post = ({ description, image, likes, uploadBy }) => {
       className="relative"
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}>
-      <img className="rounded-xl " src={`http://localhost:3001/${image}`} />
+      <img className="rounded-xl " src={image} />
       <div
         className={`absolute bottom-0 w-full tracking-wider text-white text-xl bg-black bg-opacity-50 rounded-b-xl p-2 ${
           isHovering ? 'block' : 'hidden'
