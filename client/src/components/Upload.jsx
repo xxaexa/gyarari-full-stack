@@ -2,7 +2,7 @@ import Button from './Button'
 import FormRow from './FormRow'
 import { useDispatch, useSelector } from 'react-redux'
 import { createPost } from './../features/post/postSlice'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { setCloseModal } from './../features/modal/modalSlice'
 import { RiImageAddLine } from 'react-icons/ri'
 import {
@@ -12,10 +12,8 @@ import {
   getDownloadURL,
 } from 'firebase/storage'
 import { app } from './../firebase/config'
-import { useNavigate } from 'react-router'
 
 const Upload = () => {
-  const navigate = useNavigate()
   const { user } = useSelector((state) => state.user)
   const { modal } = useSelector((state) => state.modal)
 
@@ -52,17 +50,12 @@ const Upload = () => {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           const post = { ...values, image: downloadURL }
-          dispatch(createPost(post))
           dispatch(setCloseModal())
+          dispatch(createPost(post))
         })
       }
     )
   }
-
-  useEffect(() => {
-    if (modal === false) setTimeout(() => navigate('/post'), 3000)
-  }, [])
-  console.log(modal === false)
 
   return (
     <div className=" bg-opacity-60 absolute min-h-screen">

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import customFetch, { checkForUnauthorizedResponse } from './../../utils/axios'
 import { toast } from 'react-toastify'
+import authHeader from './../../utils/authHeader'
 
 const initialState = {
   post: [],
@@ -11,7 +12,11 @@ export const createPost = createAsyncThunk(
   'post/createPost',
   async (post, thunkAPI) => {
     try {
-      const response = await customFetch.post('post/createPost', post)
+      const response = await customFetch.post(
+        'post/createPost',
+        post,
+        authHeader(thunkAPI)
+      )
       return response.data
     } catch (error) {
       return checkForUnauthorizedResponse(error, thunkAPI)

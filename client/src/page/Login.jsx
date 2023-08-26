@@ -6,12 +6,10 @@ import * as yup from 'yup'
 import { loginUser, registerUser } from './../features/user/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
-import { logoutUser } from './../features/user/userSlice'
 
 // configuration
 const registerSchema = yup.object().shape({
-  firstName: yup.string().required('required'),
-  lastName: yup.string().required('required'),
+  name: yup.string().required('required'),
   username: yup.string().required('required').min(3).max(15),
   password: yup.string().required('required'),
   picture: yup.string(),
@@ -23,8 +21,7 @@ const loginSchema = yup.object().shape({
 })
 
 const initialValuesRegister = {
-  firstName: '',
-  lastName: '',
+  name: '',
   username: '',
   password: '',
   picture: '',
@@ -49,7 +46,7 @@ const Login = () => {
         navigate('/post')
       }, 2000)
     }
-  }, [user, logoutUser])
+  }, [user, navigate])
 
   const handleFormSubmit = (values, props) => {
     if (isLogin) {
@@ -78,20 +75,12 @@ const Login = () => {
             {isRegister && (
               <div>
                 <FormRow
-                  text={'First Name'}
+                  text={'Name'}
                   type={'text'}
-                  name={'firstName'}
-                  value={values.firstName}
+                  name={'name'}
+                  value={values.name}
                   onChange={handleChange}
-                  error={errors.firstName}
-                />
-                <FormRow
-                  text={'Last Name'}
-                  type={'text'}
-                  name={'lastName'}
-                  value={values.lastName}
-                  onChange={handleChange}
-                  error={errors.lastName}
+                  error={errors.name}
                 />
               </div>
             )}
